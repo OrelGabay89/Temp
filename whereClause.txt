@@ -1,0 +1,61 @@
+            var moviesTranslations = td.TranslationDatas.Where(t => t.MovieId == movieId && t.Id != translationId)
+                                        .Join(td.Languages,
+                                                    t => t.Language,
+                                                    l => l.Id,
+                                                    (t, l) => new
+                                                    {
+                                                        TranslationId = t.Id,
+                                                        LanguageId = t.Language,
+                                                        LanguageName = GetSourceLanguageName(l.Name, CheckTranslationsCompatibility(t.Id, translationId)),
+                                                        LanguageIdentifier = l.Identifier
+                                                    })
+													
+													
+		  var translations = translationsDb.TranslationDatas.Where(t => t.MovieId == EditedData.MovieId && t.Id != m_translationId)
+                                                              .Join(translationsDb.Languages,
+                                                                    t => t.Language,
+                                                                    l => l.Id,
+                                                                   (t, l) => new { TranslationId = t.Id, Langauge = l.Name })
+                                                              .ToList().Where(u => translationManager.IsCaptionsExist(u.TranslationId))
+                                                              .ToDictionary(u => u.TranslationId, u => u.Langauge);
+															  
+															  
+															           //Select all site orders in date range that hasn't been excluded from sharpeoint
+            BasicSiteOrder[] orders = db.vw_TranslationFullDatas.Where(vwt => vwt.OrderDate >= fromDate && vwt.OrderDate <= toDate && vwt.UniqueId > startingOrderId &&
+                                                               vwt.StatusId != 0)
+                                                                .Select(vwt => new BasicSiteOrder()
+                                                                    {
+                                                                        TranslationId = vwt.TranslationId,
+                                                                        MovieID = vwt.MovieId.Value,
+                                                                        OrderId = vwt.UniqueId,
+                                                                        Title = vwt.Title,
+                                                                        SeriesName = vwt.SeriesName,
+                                                                        MovieOwner = vwt.UserName,
+                                                                        FromLanguage = vwt.MovieLanguageName,
+                                                                        ToLanguage = vwt.TranslationLanguageName,
+                                                                        Status = vwt.Status,
+                                                                        StatusId = vwt.StatusId,
+                                                                        Length = vwt.Length.Value,
+                                                                        LastUpdate = vwt.LastUpdate,
+                                                                        UploadedDate = vwt.UploadDate.Value,
+                                                                        OrderDate = vwt.OrderDate,
+                                                                        DeliveryDate = vwt.DeliveryDate,
+                                                                        IsInternal = vwt.IsInternal
+                                                                    }).ToArray().Where(o => !excludedList.Exists(id => id == o.OrderId)).ToArray();
+            return orders;
+			
+			
+		var languageEbuData = languagesDb.Languages.Where(language => language.Id == LanguageId)
+                                        .Select(langauge => new {langauge.EbuLanguageTable,langauge.EbuCodeTable} )
+                                        .Single();
+										
+		.Where(s => //This where clause can't be set as an expression tree
+                {
+                    DateTime comparedDate = s.FinishedDate.HasValue ?
+                                                    s.FinishedDate.Value :
+                                                    s.AssignedDate.Value;
+
+                    return (comparedDate.Month == selectedMonth || selectedMonth == ALL_MONTHES_VALUE) &&
+                        comparedDate.Year == selectedYear;
+                });
+        }

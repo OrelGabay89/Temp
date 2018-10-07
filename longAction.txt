@@ -1,0 +1,95 @@
+using System;
+
+using System.Collections.Generic;
+
+using System.Linq;
+
+using System.Threading;
+
+using System.Threading.Tasks;
+
+using System.Web;
+
+using System.Web.Http;
+
+using System.Web.Mvc;
+
+
+
+namespace Linet.Server.Controllers
+
+{
+
+    [System.Web.Http.RoutePrefix("api/test")]
+
+    public class TestController : BaseApiController
+
+    {
+
+        [System.Web.Http.Route("Create", Name = "Test")]
+
+        [System.Web.Http.HttpPost]
+
+        public async Task<IHttpActionResult> Create()
+
+        {
+
+            await LongAction();
+
+
+
+            return Ok(Guid.NewGuid());
+
+        }
+
+
+
+        public Task LongAction()
+
+        {
+
+            return Task.Run(async () =>
+
+            {
+
+                ConcatVideos().ContinueWith(task =>
+
+                {
+
+
+
+                });
+
+            });
+
+        }
+
+
+
+        public async Task ConcatVideos()
+
+        {
+
+            await Task.Run(() =>
+
+            {
+
+                Thread.Sleep(5000);
+
+                for (int i = 0; i < 10000; i++)
+
+                {
+
+                    Console.Write(i);
+
+                }
+
+            });
+
+
+
+        }
+
+    }
+
+}
